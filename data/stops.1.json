@@ -1,0 +1,224 @@
+[
+  {
+    "stopId": "101",
+    "name": "Van Cortlandt Park - 242 St",
+    "lat": 40.889248,
+    "lon": -73.898583
+  },
+  {
+    "stopId": "103",
+    "name": "238 St",
+    "lat": 40.884667,
+    "lon": -73.90087
+  },
+  {
+    "stopId": "104",
+    "name": "231 St",
+    "lat": 40.878856,
+    "lon": -73.904834
+  },
+  {
+    "stopId": "106",
+    "name": "Marble Hill - 225 St",
+    "lat": 40.874561,
+    "lon": -73.909831
+  },
+  {
+    "stopId": "107",
+    "name": "215 St",
+    "lat": 40.869444,
+    "lon": -73.915279
+  },
+  {
+    "stopId": "108",
+    "name": "207 St",
+    "lat": 40.864621,
+    "lon": -73.918411
+  },
+  {
+    "stopId": "109",
+    "name": "Dyckman St",
+    "lat": 40.860531,
+    "lon": -73.925831
+  },
+  {
+    "stopId": "110",
+    "name": "191 St",
+    "lat": 40.855225,
+    "lon": -73.929412
+  },
+  {
+    "stopId": "111",
+    "name": "181 St",
+    "lat": 40.849505,
+    "lon": -73.933596
+  },
+  {
+    "stopId": "112",
+    "name": "168 St - Washington Hts",
+    "lat": 40.843915,
+    "lon": -73.939704
+  },
+  {
+    "stopId": "113",
+    "name": "157 St",
+    "lat": 40.834041,
+    "lon": -73.94489
+  },
+  {
+    "stopId": "114",
+    "name": "145 St",
+    "lat": 40.826551,
+    "lon": -73.950234
+  },
+  {
+    "stopId": "115",
+    "name": "137 St - City College",
+    "lat": 40.822008,
+    "lon": -73.953676
+  },
+  {
+    "stopId": "116",
+    "name": "125 St",
+    "lat": 40.815581,
+    "lon": -73.958372
+  },
+  {
+    "stopId": "117",
+    "name": "116 St - Columbia University",
+    "lat": 40.807722,
+    "lon": -73.96411
+  },
+  {
+    "stopId": "118",
+    "name": "103 St",
+    "lat": 40.799446,
+    "lon": -73.968379
+  },
+  {
+    "stopId": "119",
+    "name": "96 St",
+    "lat": 40.793919,
+    "lon": -73.972323
+  },
+  {
+    "stopId": "120",
+    "name": "86 St",
+    "lat": 40.785868,
+    "lon": -73.976041
+  },
+  {
+    "stopId": "121",
+    "name": "79 St",
+    "lat": 40.783934,
+    "lon": -73.979917
+  },
+  {
+    "stopId": "122",
+    "name": "72 St",
+    "lat": 40.778453,
+    "lon": -73.981963
+  },
+  {
+    "stopId": "123",
+    "name": "66 St - Lincoln Center",
+    "lat": 40.773404,
+    "lon": -73.982209
+  },
+  {
+    "stopId": "124",
+    "name": "59 St - Columbus Circle",
+    "lat": 40.768247,
+    "lon": -73.981929
+  },
+  {
+    "stopId": "125",
+    "name": "50 St",
+    "lat": 40.761728,
+    "lon": -73.983849
+  },
+  {
+    "stopId": "126",
+    "name": "Times Sq - 42 St",
+    "lat": 40.755477,
+    "lon": -73.986754
+  },
+  {
+    "stopId": "127",
+    "name": "34 St - Penn Station",
+    "lat": 40.750373,
+    "lon": -73.991057
+  },
+  {
+    "stopId": "128",
+    "name": "28 St",
+    "lat": 40.747215,
+    "lon": -73.993365
+  },
+  {
+    "stopId": "129",
+    "name": "23 St",
+    "lat": 40.744081,
+    "lon": -73.995657
+  },
+  {
+    "stopId": "130",
+    "name": "18 St",
+    "lat": 40.741303,
+    "lon": -73.997141
+  },
+  {
+    "stopId": "131",
+    "name": "14 St - Union Sq",
+    "lat": 40.734673,
+    "lon": -73.989951
+  },
+  {
+    "stopId": "132",
+    "name": "Christopher St - Sheridan Sq",
+    "lat": 40.733422,
+    "lon": -74.002906
+  },
+  {
+    "stopId": "133",
+    "name": "Houston St",
+    "lat": 40.728251,
+    "lon": -74.005367
+  },
+  {
+    "stopId": "134",
+    "name": "Canal St",
+    "lat": 40.722854,
+    "lon": -74.006277
+  },
+  {
+    "stopId": "135",
+    "name": "Franklin St",
+    "lat": 40.719318,
+    "lon": -74.006886
+  },
+  {
+    "stopId": "136",
+    "name": "Chambers St",
+    "lat": 40.715478,
+    "lon": -74.008811
+  },
+  {
+    "stopId": "137",
+    "name": "WTC Cortlandt",
+    "lat": 40.711835,
+    "lon": -74.012188
+  },
+  {
+    "stopId": "138",
+    "name": "Rector St",
+    "lat": 40.707513,
+    "lon": -74.013783
+  },
+  {
+    "stopId": "139",
+    "name": "South Ferry - Whitehall St",
+    "lat": 40.701411,
+    "lon": -74.013205
+  }
+]

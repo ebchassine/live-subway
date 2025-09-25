@@ -1,0 +1,24 @@
+.App {
+  text-align: center;
+}
+
+.google-map {
+  width: 100%;
+  height: 100vh;
+}
+
+.map-controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+.train-tooltip {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}

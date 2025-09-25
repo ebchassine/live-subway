@@ -1,0 +1,260 @@
+[
+  {
+    "stopId": "A02",
+    "name": "Inwood - 207 St",
+    "lat": 40.868072,
+    "lon": -73.919899
+  },
+  {
+    "stopId": "A03",
+    "name": "Dyckman St",
+    "lat": 40.865491,
+    "lon": -73.927271
+  },
+  {
+    "stopId": "A05",
+    "name": "190 St",
+    "lat": 40.859022,
+    "lon": -73.93418
+  },
+  {
+    "stopId": "A06",
+    "name": "181 St",
+    "lat": 40.851695,
+    "lon": -73.937969
+  },
+  {
+    "stopId": "A07",
+    "name": "175 St",
+    "lat": 40.847391,
+    "lon": -73.939704
+  },
+  {
+    "stopId": "A09",
+    "name": "168 St - Washington Hts",
+    "lat": 40.840556,
+    "lon": -73.940133
+  },
+  {
+    "stopId": "A10",
+    "name": "163 St - Amsterdam Av",
+    "lat": 40.836013,
+    "lon": -73.939892
+  },
+  {
+    "stopId": "A11",
+    "name": "155 St",
+    "lat": 40.830518,
+    "lon": -73.941514
+  },
+  {
+    "stopId": "A12",
+    "name": "145 St",
+    "lat": 40.824783,
+    "lon": -73.944216
+  },
+  {
+    "stopId": "A14",
+    "name": "125 St",
+    "lat": 40.811109,
+    "lon": -73.952343
+  },
+  {
+    "stopId": "A15",
+    "name": "116 St - Columbia University",
+    "lat": 40.807722,
+    "lon": -73.96411
+  },
+  {
+    "stopId": "A16",
+    "name": "Cathedral Pkwy (110 St)",
+    "lat": 40.803967,
+    "lon": -73.966847
+  },
+  {
+    "stopId": "A17",
+    "name": "103 St",
+    "lat": 40.799446,
+    "lon": -73.968379
+  },
+  {
+    "stopId": "A18",
+    "name": "96 St",
+    "lat": 40.794979,
+    "lon": -73.972323
+  },
+  {
+    "stopId": "A19",
+    "name": "86 St",
+    "lat": 40.785868,
+    "lon": -73.976041
+  },
+  {
+    "stopId": "A20",
+    "name": "81 St - Museum of Natural History",
+    "lat": 40.781433,
+    "lon": -73.972143
+  },
+  {
+    "stopId": "A21",
+    "name": "72 St",
+    "lat": 40.775594,
+    "lon": -73.975393
+  },
+  {
+    "stopId": "A22",
+    "name": "59 St - Columbus Circle",
+    "lat": 40.768247,
+    "lon": -73.981929
+  },
+  {
+    "stopId": "A24",
+    "name": "42 St - Port Authority Bus Terminal",
+    "lat": 40.757308,
+    "lon": -73.989735
+  },
+  {
+    "stopId": "A25",
+    "name": "34 St - Penn Station",
+    "lat": 40.752287,
+    "lon": -73.993391
+  },
+  {
+    "stopId": "A27",
+    "name": "14 St",
+    "lat": 40.740893,
+    "lon": -74.00169
+  },
+  {
+    "stopId": "A28",
+    "name": "W 4 St - Wash Sq",
+    "lat": 40.732338,
+    "lon": -74.000495
+  },
+  {
+    "stopId": "A30",
+    "name": "Canal St",
+    "lat": 40.720824,
+    "lon": -74.005229
+  },
+  {
+    "stopId": "A31",
+    "name": "Chambers St",
+    "lat": 40.714111,
+    "lon": -74.008585
+  },
+  {
+    "stopId": "A32",
+    "name": "Fulton St",
+    "lat": 40.710197,
+    "lon": -74.007691
+  },
+  {
+    "stopId": "A33",
+    "name": "High St - Brooklyn Bridge",
+    "lat": 40.699337,
+    "lon": -73.990531
+  },
+  {
+    "stopId": "A34",
+    "name": "Jay St - MetroTech",
+    "lat": 40.692338,
+    "lon": -73.987342
+  },
+  {
+    "stopId": "A36",
+    "name": "Hoyt - Schermerhorn Sts",
+    "lat": 40.688484,
+    "lon": -73.985001
+  },
+  {
+    "stopId": "A38",
+    "name": "Lafayette Av",
+    "lat": 40.686113,
+    "lon": -73.974086
+  },
+  {
+    "stopId": "A40",
+    "name": "Nostrand Av",
+    "lat": 40.680438,
+    "lon": -73.950426
+  },
+  {
+    "stopId": "A41",
+    "name": "Utica Av",
+    "lat": 40.679364,
+    "lon": -73.930729
+  },
+  {
+    "stopId": "A43",
+    "name": "Broadway Junction",
+    "lat": 40.678334,
+    "lon": -73.905316
+  },
+  {
+    "stopId": "A44",
+    "name": "Liberty Av",
+    "lat": 40.674542,
+    "lon": -73.896548
+  },
+  {
+    "stopId": "A45",
+    "name": "Van Siclen Av",
+    "lat": 40.67271,
+    "lon": -73.889395
+  },
+  {
+    "stopId": "A46",
+    "name": "Shepherd Av",
+    "lat": 40.674545,
+    "lon": -73.881138
+  },
+  {
+    "stopId": "A47",
+    "name": "Euclid Av",
+    "lat": 40.675377,
+    "lon": -73.872106
+  },
+  {
+    "stopId": "A48",
+    "name": "Grant Av",
+    "lat": 40.677044,
+    "lon": -73.86701
+  },
+  {
+    "stopId": "A49",
+    "name": "80 St",
+    "lat": 40.679371,
+    "lon": -73.858992
+  },
+  {
+    "stopId": "A50",
+    "name": "88 St",
+    "lat": 40.679843,
+    "lon": -73.851169
+  },
+  {
+    "stopId": "A51",
+    "name": "Rockaway Blvd",
+    "lat": 40.680429,
+    "lon": -73.843853
+  },
+  {
+    "stopId": "A52",
+    "name": "104 St",
+    "lat": 40.681711,
+    "lon": -73.837683
+  },
+  {
+    "stopId": "A53",
+    "name": "111 St",
+    "lat": 40.684331,
+    "lon": -73.832163
+  },
+  {
+    "stopId": "A54",
+    "name": "Ozone Park - Lefferts Blvd",
+    "lat": 40.685951,
+    "lon": -73.825798
+  }
+]
