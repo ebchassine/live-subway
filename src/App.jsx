@@ -6,33 +6,59 @@ import "./App.css";
 // -------------------- CONFIG --------------------
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
-// Choose a feed (this example: BDFM). You can swap to ACE, NQRW, etc.
-const FEED_URL =
-  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-bdfm";
+// Feed groups from https://api.mta.info/#/subwayRealTimeFeeds
+const FEED_URLS = {
+  "123456S": "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs",
+  "ACE":      "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-ace",
+  "BDFM":     "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-bdfm",
+  "NQRW":     "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-nqrw",
+  "L":        "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-l",
+  "G":        "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-g",
+  "JZ":       "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-jz",
+};
 
-const REFRESH_MS = 5000;        // poll faster so movement is more obvious
-const STALE_MS = 180000;        // ignore vehicles older than 3 minutes
+// Route → feed group
+const FEED_GROUP_FOR_ROUTE = {
+  "1":"123456S","2":"123456S","3":"123456S","4":"123456S","5":"123456S","6":"123456S","S":"123456S",
+  "A":"ACE","C":"ACE","E":"ACE",
+  "B":"BDFM","D":"BDFM","F":"BDFM","M":"BDFM",
+  "N":"NQRW","Q":"NQRW","R":"NQRW","W":"NQRW",
+  "L":"L",
+  "G":"G",
+  "J":"JZ","Z":"JZ"
+};
+
+const ROUTES = ["A","C","E","B","D","F","M","1","2","3","4","5","6","N","Q","R","W","L","G","J","Z","S"];
+
+const REFRESH_MS = 8000;
 const DEFAULT_CENTER = { lat: 40.73061, lng: -73.935242 };
 const DEFAULT_ZOOM = 11;
 
-// Inline SVG icons (no window.google dependency at render time)
-const LIVE_ICON_URL =
+// -------------------- ROUTE COLORS --------------------
+// Official-ish MTA palette
+const ROUTE_COLORS = {
+  "A":"#0039A6","C":"#0039A6","E":"#0039A6",          // Blue
+  "B":"#FF6319","D":"#FF6319","F":"#FF6319","M":"#FF6319", // Orange
+  "G":"#6CBE45",                                       // Light green
+  "J":"#996633","Z":"#996633",                         // Brown
+  "L":"#A7A9AC",                                       // Gray
+  "N":"#FCCC0A","Q":"#FCCC0A","R":"#FCCC0A","W":"#FCCC0A", // Yellow
+  "1":"#EE352E","2":"#EE352E","3":"#EE352E",           // Red
+  "4":"#00933C","5":"#00933C","6":"#00933C",           // Green
+  "7":"#B933AD",                                       // Purple
+  "S":"#808183"                                        // Shuttle dark gray
+};
+
+// Build an SVG data URL for a colored dot
+const coloredDot = (hex) =>
   "data:image/svg+xml;charset=UTF-8," +
   encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-       <circle cx="7" cy="7" r="6" fill="#ff7a00"/>
+       <circle cx="7" cy="7" r="6" fill="${hex}"/>
      </svg>`
   );
 
-const EST_ICON_URL =
-  "data:image/svg+xml;charset=UTF-8," +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-       <circle cx="7" cy="7" r="5.5" fill="white" stroke="#606060" stroke-width="1.5"/>
-     </svg>`
-  );
-
-// -------------------- HELPERS --------------------
+// -------------------- helpers --------------------
 async function loadStopsTxt() {
   const resp = await fetch("/stops.txt");
   if (!resp.ok) throw new Error("stops.txt not found in /public");
@@ -63,11 +89,21 @@ async function loadStopsTxt() {
   return stops;
 }
 
+function routeFromEntity(entity) {
+  return (
+    entity?.vehicle?.trip?.routeId ||
+    entity?.tripUpdate?.trip?.routeId ||
+    null
+  );
+}
+
 // -------------------- APP --------------------
 export default function App() {
   const [status, setStatus] = useState("idle");
-  const [markers, setMarkers] = useState([]); // {lat,lng,title,live,ageSec}
+  const [markers, setMarkers] = useState([]); // {lat,lng,title}
   const [mapReady, setMapReady] = useState(false);
+  const [routeId, setRouteId] = useState("A");
+  const [feedGroup, setFeedGroup] = useState(FEED_GROUP_FOR_ROUTE["A"]);
 
   const protoRootRef = useRef(null);
   const stopsRef = useRef({});
@@ -83,7 +119,11 @@ export default function App() {
     []
   );
 
-  // Load proto + stops once
+  useEffect(() => {
+    const g = FEED_GROUP_FOR_ROUTE[routeId] || "123456S";
+    setFeedGroup(g);
+  }, [routeId]);
+
   const ensureStatics = useCallback(async () => {
     if (!protoRootRef.current) {
       const root = await protobuf.load("/gtfs-realtime.proto");
@@ -97,81 +137,57 @@ export default function App() {
     }
   }, []);
 
-  // Fetch + decode vehicles → markers
   const refreshVehicles = useCallback(async () => {
     if (!protoRootRef.current) return;
 
     setStatus("fetching");
     try {
+      const url = FEED_URLS[feedGroup];
+      if (!url) throw new Error(`No feed URL for group ${feedGroup}`);
+
       const FeedMessage =
         protoRootRef.current.lookupType("transit_realtime.FeedMessage");
 
-      const resp = await fetch(FEED_URL, { mode: "cors" });
+      const resp = await fetch(url, { mode: "cors" });
       if (!resp.ok) {
         const text = await resp.text().catch(() => "");
-        throw new Error(`MTA feed ${resp.status} ${text.slice(0, 120)}`);
+        throw new Error(`MTA ${feedGroup} ${resp.status} ${text.slice(0,120)}`);
       }
 
       const buffer = await resp.arrayBuffer();
       const feed = FeedMessage.decode(new Uint8Array(buffer));
 
-      const now = Date.now();
       const out = [];
+      const seen = new Set();
 
-      // 1) Vehicle.position (live)
       for (const entity of feed.entity || []) {
-        const veh = entity?.vehicle;
-        const pos = veh?.position;
-        if (pos && Number.isFinite(pos.latitude) && Number.isFinite(pos.longitude)) {
-          const ts = veh?.timestamp ? veh.timestamp * 1000 : now;
-          const ageMs = Math.max(0, now - ts);
-          if (ageMs <= STALE_MS) {
-            out.push({
-              lat: pos.latitude,
-              lng: pos.longitude,
-              title: `Live • ${veh?.trip?.tripId || "—"} • ${Math.round(ageMs / 1000)}s ago`,
-              live: true,
-              ageSec: Math.round(ageMs / 1000),
-            });
-          }
-        }
-      }
-
-      // 2) Fallback via next stop from tripUpdate (estimated)
-      for (const entity of feed.entity || []) {
-        const hasVeh =
-          !!(entity?.vehicle?.position && Number.isFinite(entity.vehicle.position.latitude));
-        if (hasVeh) continue;
+        const r = routeFromEntity(entity);
+        if (r && r.toUpperCase() !== routeId.toUpperCase()) continue;
 
         const updates = entity?.tripUpdate?.stopTimeUpdate;
         if (updates && updates.length > 0) {
           const stopId = updates[0]?.stopId;
           const stop = stopId ? stopsRef.current[stopId] : null;
-          if (stop) {
+          if (stop && !seen.has(stopId)) {
+            seen.add(stopId);
             out.push({
               lat: stop.lat,
               lng: stop.lon,
-              title: `Est. at stop • ${stop.name}`,
-              live: false,
-              ageSec: null,
+              title: `${routeId} • ${stop.name}`,
             });
           }
         }
       }
 
       setMarkers(out);
-      const liveCount = out.filter(m => m.live).length;
-      const estCount  = out.length - liveCount;
-      setStatus(`ok (${out.length} trains • ${liveCount} live, ${estCount} est.)`);
-      console.log("Train markers added:", out.length);
+      setStatus(`ok (${out.length} trains on ${routeId})`);
     } catch (err) {
-      console.error("Error fetching/decoding vehicles:", err);
+      console.error("Fetch/decode error:", err);
       setStatus(`error: ${err.message}`);
       setMarkers([]);
     }
-  }, []);
+  }, [feedGroup, routeId]);
 
-  // Start once Google Map has mounted
   useEffect(() => {
     if (!mapReady) return;
 
@@ -185,6 +201,7 @@ export default function App() {
         await refreshVehicles();
         if (cancelled) return;
 
+        if (pollRef.current) clearInterval(pollRef.current);
         pollRef.current = setInterval(refreshVehicles, REFRESH_MS);
       } catch (e) {
         console.error(e);
@@ -196,30 +213,37 @@ export default function App() {
       cancelled = true;
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [mapReady, ensureStatics, refreshVehicles]);
+  }, [mapReady, routeId, feedGroup, ensureStatics, refreshVehicles]);
+
+  const dotUrl = useMemo(
+    () => coloredDot(ROUTE_COLORS[routeId] || "#ff7a00"),
+    [routeId]
+  );
 
   return (
     <LoadScript
       googleMapsApiKey={GOOGLE_MAPS_API_KEY}
       onError={(e) => {
         console.error("Google Maps script failed to load", e);
-        setStatus(
-          "error: Google Maps failed to load (check API key, billing, or referrer restrictions)"
-        );
+        setStatus("error: Google Maps failed to load (check API key/billing/referrer)");
       }}
     >
       <div className="map-container">
         {/* HUD */}
         <div className="hud">
-          <div className="status">{status}</div>
-          <div className="legend">
-            <span className="legend-item">
-              <span className="dot live" /> live position
-            </span>
-            <span className="legend-item">
-              <span className="dot est" /> estimated (next stop)
-            </span>
+          <div className="routes">
+            {ROUTES.map(r => (
+              <button
+                key={r}
+                className={`route-btn ${r === routeId ? "active" : ""}`}
+                onClick={() => setRouteId(r)}
+                title={`Show ${r} trains`}
+              >
+                {r}
+              </button>
+            ))}
           </div>
+          <div className="status">{status}</div>
         </div>
 
         <GoogleMap
@@ -234,7 +258,7 @@ export default function App() {
               key={i}
               position={{ lat: m.lat, lng: m.lng }}
               title={m.title}
-              icon={{ url: m.live ? LIVE_ICON_URL : EST_ICON_URL }}
+              icon={{ url: dotUrl }}
             />
           ))}
         </GoogleMap>

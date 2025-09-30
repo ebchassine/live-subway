@@ -12,7 +12,7 @@ html, body, #root {
   position: relative;
 }
 
-/* HUD panel */
+/* HUD panel with route buttons */
 .hud {
   position: absolute;
   z-index: 2;
@@ -20,39 +20,39 @@ html, body, #root {
   left: 12px;
   background: #fff;
   border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 8px 10px;
+  border-radius: 12px;
+  padding: 10px;
   font: 12px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   color: #444;
   box-shadow: 0 3px 12px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+.routes {
+  display: grid;
+  grid-template-columns: repeat(13, auto);
   gap: 6px;
+}
+
+.route-btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+.route-btn:hover { background: #f3f6ff; }
+.route-btn.active {
+  background: #0039a6;
+  border-color: #0039a6;
+  color: #fff;
 }
 
 .status { color: #333; }
 
-.legend {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #555;
-}
-.legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  display: inline-block;
-  border-radius: 50%;
-}
-.dot.live { background: #ff7a00; }
-.dot.est  { background: #fff; border: 2px solid #606060; }
-
-/* Optional DOM-marker styling if you later switch to custom overlays */
+/* optional DOM-marker styles if you ever switch to custom overlays */
 .train-marker { transition: transform 0.2s ease; }
 .train-marker:hover { transform: scale(1.2); z-index: 1000; }
