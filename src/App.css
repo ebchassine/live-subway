@@ -1,24 +1,38 @@
-.App {
-  text-align: center;
-}
-
-.google-map {
+/* Fill the viewport */
+html, body, #root {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-.map-controls {
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* HUD panel */
+.hud {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
+  z-index: 2;
+  top: 12px;
+  left: 12px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: 12px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #444;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
 }
 
-.train-tooltip {
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
+.status { color: #555; }
+
+/* Optional DOM-marker styling if you later switch to custom overlays */
+.train-marker { transition: transform 0.2s ease; }
+.train-marker:hover { transform: scale(1.2); z-index: 1000; }
+.train-dot {
+  width: 8px; height: 8px; background:#ff7a00; border-radius:50%;
+  box-shadow: 0 0 0 2px rgba(255,122,0,.25);
 }

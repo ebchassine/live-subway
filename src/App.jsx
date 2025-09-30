@@ -1,168 +1,213 @@
-"use client"
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { LoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
+import protobuf from "protobufjs";
+import "./App.css";
 
-import { useState, useEffect } from "react"
-import { LoadScript } from "@react-google-maps/api"
-import MapView from "./components/MapView"
-import Controls from "./components/Controls"
-import { AVAILABLE_ROUTES } from "./lib/routes"
-import "./App.css"
+// -------------------- CONFIG --------------------
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
-const libraries = ["geometry", "drawing"]
+// Choose a feed (this example: BDFM). You can swap to ACE, NQRW, etc.
+const FEED_URL =
+  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-bdfm";
 
-function App() {
-  const [selectedRoute, setSelectedRoute] = useState("A")
-  const [refreshInterval, setRefreshInterval] = useState(10000) // 10 seconds
-  const [isLiveUpdatesEnabled, setIsLiveUpdatesEnabled] = useState(true)
-  const [lastUpdated, setLastUpdated] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+const REFRESH_MS = 10000;
+const DEFAULT_CENTER = { lat: 40.73061, lng: -73.935242 };
+const DEFAULT_ZOOM = 11;
 
-  const handleRouteChange = (routeId) => {
-    console.log(`[v0] Route changed to: ${routeId}`)
-    setSelectedRoute(routeId)
-  }
+// Inline SVG icon (avoid touching window.google before script loads)
+const TRAIN_ICON_URL =
+  "data:image/svg+xml;charset=UTF-8," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><circle cx="7" cy="7" r="6" fill="#ff7a00"/></svg>`
+  );
 
-  const handleIntervalChange = (interval) => {
-    console.log(`[v0] Refresh interval changed to: ${interval}ms`)
-    setRefreshInterval(interval)
-  }
+// -------------------- HELPERS --------------------
+async function loadStopsTxt() {
+  const resp = await fetch("/stops.txt");
+  if (!resp.ok) throw new Error("stops.txt not found in /public");
+  const text = await resp.text();
 
-  const handleLiveUpdatesToggle = () => {
-    const newState = !isLiveUpdatesEnabled
-    console.log(`[v0] Live updates ${newState ? "enabled" : "disabled"}`)
-    setIsLiveUpdatesEnabled(newState)
-  }
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length <= 1) return {};
 
-  const handleDataUpdate = (timestamp) => {
-    setLastUpdated(timestamp)
-  }
+  const header = lines[0].split(",");
+  const idIdx = header.indexOf("stop_id");
+  const nameIdx = header.indexOf("stop_name");
+  const latIdx = header.indexOf("stop_lat");
+  const lonIdx = header.indexOf("stop_lon");
 
-  useEffect(() => {
-    const handleKeyPress = (event) => {
-      // Only handle shortcuts when not typing in an input
-      if (event.target.tagName === "INPUT" || event.target.tagName === "SELECT") {
-        return
-      }
-
-      switch (event.key) {
-        case " ":
-          event.preventDefault()
-          handleLiveUpdatesToggle()
-          break
-        case "1":
-        case "2":
-        case "3":
-        case "4":
-        case "5":
-        case "6":
-        case "7":
-          const numericRoute = event.key
-          if (AVAILABLE_ROUTES.find((r) => r.id === numericRoute)) {
-            handleRouteChange(numericRoute)
-          }
-          break
-        case "a":
-        case "A":
-          handleRouteChange("A")
-          break
-        case "c":
-        case "C":
-          handleRouteChange("C")
-          break
-        case "e":
-        case "E":
-          handleRouteChange("E")
-          break
-        case "l":
-        case "L":
-          handleRouteChange("L")
-          break
-        case "n":
-        case "N":
-          handleRouteChange("N")
-          break
-        case "q":
-        case "Q":
-          handleRouteChange("Q")
-          break
-        case "r":
-        case "R":
-          handleRouteChange("R")
-          break
-        default:
-          break
-      }
+  const stops = {};
+  for (let i = 1; i < lines.length; i++) {
+    const row = lines[i];
+    if (!row) continue;
+    const cols = row.split(",");
+    const stop_id = cols[idIdx];
+    const stop_name = cols[nameIdx];
+    const stop_lat = parseFloat(cols[latIdx]);
+    const stop_lon = parseFloat(cols[lonIdx]);
+    if (stop_id && Number.isFinite(stop_lat) && Number.isFinite(stop_lon)) {
+      stops[stop_id] = { name: stop_name, lat: stop_lat, lon: stop_lon };
     }
-
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [isLiveUpdatesEnabled])
-
-  const handleLoadError = (error) => {
-    console.error("[v0] Google Maps failed to load:", error)
-    setIsLoading(false)
   }
-
-  const handleLoadSuccess = () => {
-    console.log("[v0] Google Maps loaded successfully")
-    setIsLoading(false)
-  }
-
-  return (
-    <div className="App">
-      <LoadScript
-        googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-        libraries={libraries}
-        onLoad={handleLoadSuccess}
-        onError={handleLoadError}
-        loadingElement={
-          <div className="flex items-center justify-center h-screen bg-gray-50">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <div className="text-lg text-gray-700">Loading Google Maps...</div>
-              <div className="text-sm text-gray-500 mt-2">Make sure your API key is configured correctly</div>
-            </div>
-          </div>
-        }
-      >
-        {!isLoading && (
-          <div className="relative w-full h-screen">
-            <MapView
-              selectedRoute={selectedRoute}
-              refreshInterval={refreshInterval}
-              isLiveUpdatesEnabled={isLiveUpdatesEnabled}
-              onDataUpdate={handleDataUpdate}
-            />
-
-            <div className="map-controls">
-              <Controls
-                selectedRoute={selectedRoute}
-                onRouteChange={handleRouteChange}
-                refreshInterval={refreshInterval}
-                onIntervalChange={handleIntervalChange}
-                isLiveUpdatesEnabled={isLiveUpdatesEnabled}
-                onLiveUpdatesToggle={handleLiveUpdatesToggle}
-                lastUpdated={lastUpdated}
-                availableRoutes={AVAILABLE_ROUTES}
-              />
-            </div>
-
-            {/* Keyboard shortcuts help */}
-            <div className="absolute bottom-4 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-3 text-xs text-gray-600 max-w-xs">
-              <div className="font-semibold mb-2">Keyboard Shortcuts</div>
-              <div className="space-y-1">
-                <div>
-                  <kbd className="bg-gray-100 px-1 rounded">Space</kbd> Toggle live updates
-                </div>
-                <div>
-                  <kbd className="bg-gray-100 px-1 rounded">1-7, A-R</kbd> Select route
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </LoadScript>
-    </div>
-  )
+  return stops;
 }
 
-export default App
+// -------------------- APP --------------------
+export default function App() {
+  const [status, setStatus] = useState("idle");
+  const [vehicles, setVehicles] = useState([]); // [{lat,lng,title}]
+  const [mapReady, setMapReady] = useState(false);
+
+  const protoRootRef = useRef(null);
+  const stopsRef = useRef({});
+  const pollRef = useRef(null);
+
+  const mapOptions = useMemo(
+    () => ({
+      streetViewControl: false,
+      mapTypeControl: false,
+      fullscreenControl: true,
+      clickableIcons: false,
+    }),
+    []
+  );
+
+  // Load proto + stops once
+  const ensureStatics = useCallback(async () => {
+    if (!protoRootRef.current) {
+      const root = await protobuf.load("/gtfs-realtime.proto");
+      protoRootRef.current = root;
+      console.log("GTFS proto loaded");
+    }
+    if (!Object.keys(stopsRef.current).length) {
+      const stops = await loadStopsTxt();
+      stopsRef.current = stops;
+      console.log("Stops loaded:", Object.keys(stops).length);
+    }
+  }, []);
+
+  // Fetch + decode vehicles → markers
+  const refreshVehicles = useCallback(async () => {
+    if (!protoRootRef.current) return;
+
+    setStatus("fetching");
+    try {
+      const FeedMessage =
+        protoRootRef.current.lookupType("transit_realtime.FeedMessage");
+
+      // No headers (no API key)
+      const resp = await fetch(FEED_URL, { mode: "cors" });
+      if (!resp.ok) {
+        const text = await resp.text().catch(() => "");
+        throw new Error(`MTA feed ${resp.status} ${text.slice(0, 120)}`);
+      }
+
+      const buffer = await resp.arrayBuffer();
+      const feed = FeedMessage.decode(new Uint8Array(buffer));
+
+      const markers = [];
+
+      // 1) Vehicle.position when present
+      for (const entity of feed.entity || []) {
+        const pos = entity?.vehicle?.position;
+        if (pos && Number.isFinite(pos.latitude) && Number.isFinite(pos.longitude)) {
+          markers.push({
+            lat: pos.latitude,
+            lng: pos.longitude,
+            title: `Trip ${entity?.vehicle?.trip?.tripId || ""}`,
+          });
+        }
+      }
+
+      // 2) Fallback via next stop from tripUpdate
+      for (const entity of feed.entity || []) {
+        const hasVeh =
+          !!(entity?.vehicle?.position && Number.isFinite(entity.vehicle.position.latitude));
+        if (hasVeh) continue;
+        const updates = entity?.tripUpdate?.stopTimeUpdate;
+        if (updates && updates.length > 0) {
+          const stopId = updates[0]?.stopId;
+          const stop = stopId ? stopsRef.current[stopId] : null;
+          if (stop) {
+            markers.push({
+              lat: stop.lat,
+              lng: stop.lon,
+              title: `Next stop ${stop.name}`,
+            });
+          }
+        }
+      }
+
+      setVehicles(markers);
+      setStatus(`ok (${markers.length} trains)`);
+      console.log("Train markers added:", markers.length);
+    } catch (err) {
+      console.error("Error fetching/decoding vehicles:", err);
+      setStatus(`error: ${err.message}`);
+      setVehicles([]);
+    }
+  }, []);
+
+  // Start once Google Map has mounted
+  useEffect(() => {
+    if (!mapReady) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        setStatus("loading");
+        await ensureStatics();
+        if (cancelled) return;
+
+        await refreshVehicles();
+        if (cancelled) return;
+
+        pollRef.current = setInterval(refreshVehicles, REFRESH_MS);
+      } catch (e) {
+        console.error(e);
+        if (!cancelled) setStatus(`error: ${e.message}`);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [mapReady, ensureStatics, refreshVehicles]);
+
+  return (
+    <LoadScript
+      googleMapsApiKey={GOOGLE_MAPS_API_KEY}
+      onError={(e) => {
+        console.error("Google Maps script failed to load", e);
+        setStatus(
+          "error: Google Maps failed to load (check API key, billing, or referrer restrictions)"
+        );
+      }}
+    >
+      <div className="map-container">
+        {/* HUD */}
+        <div className="hud">
+          <div className="status">status: {status}</div>
+        </div>
+
+        <GoogleMap
+          mapContainerClassName="map-container"
+          center={DEFAULT_CENTER}
+          zoom={DEFAULT_ZOOM}
+          options={mapOptions}
+          onLoad={() => setMapReady(true)}
+        >
+          {vehicles.map((v, i) => (
+            <MarkerF
+              key={i}
+              position={{ lat: v.lat, lng: v.lng }}
+              title={v.title}
+              icon={{ url: TRAIN_ICON_URL }}
+            />
+          ))}
+        </GoogleMap>
+      </div>
+    </LoadScript>
+  );
+}
