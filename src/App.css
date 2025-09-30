@@ -25,14 +25,34 @@ html, body, #root {
   font: 12px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   color: #444;
   box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.status { color: #555; }
+.status { color: #333; }
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #555;
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 50%;
+}
+.dot.live { background: #ff7a00; }
+.dot.est  { background: #fff; border: 2px solid #606060; }
 
 /* Optional DOM-marker styling if you later switch to custom overlays */
 .train-marker { transition: transform 0.2s ease; }
 .train-marker:hover { transform: scale(1.2); z-index: 1000; }
-.train-dot {
-  width: 8px; height: 8px; background:#ff7a00; border-radius:50%;
-  box-shadow: 0 0 0 2px rgba(255,122,0,.25);
-}
