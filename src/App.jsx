@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { LoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
 import protobuf from "protobufjs";
 import "./App.css";
+import React from "react";
+
 
 // -------------------- CONFIG --------------------
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";

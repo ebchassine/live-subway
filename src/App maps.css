@@ -1,0 +1,63 @@
+/* Fill the viewport */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* App wrapper */
+.app-root {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: #f6f7fb;
+}
+
+/* Fullscreen map container */
+.map {
+  position: absolute;
+  inset: 0;
+}
+
+/* Minimal HUD */
+.hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: 12px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #444;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.hud .title { font-weight: 600; color: #222; }
+.hud .sub   { color: #666; }
+.hud .status{ color: #333; }
+
+/* Friendly message if key is missing */
+.overlay-msg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #333;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.85),
+    rgba(255,255,255,0.85) 10px,
+    rgba(255,255,255,0.9) 10px,
+    rgba(255,255,255,0.9) 20px
+  );
+}
+
+.overlay-msg code {
+  background: #f1f3f5;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
